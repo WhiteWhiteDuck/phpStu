@@ -9,9 +9,9 @@ function getNextNum(&$my_short_url,$n,$sys) {
 	$my_short_url .=  $bit[$n%$sys];
 }
 
-$flurl = $_GET["temp_url"];											//通过Get[name]提交表单传值到服务器端
-$lurl = htmlspecialchars($flurl, ENT_QUOTES);						//htmlspecialchars（）防止xss注入
-																	//定义header
+$flurl = $_GET["temp_url"];						//通过Get[name]提交表单传值到服务器端
+$lurl = htmlspecialchars($flurl, ENT_QUOTES);				//htmlspecialchars（）防止xss注入
+									//定义header
 $myheader = "														
 <?php  
 	header('HTTP/1.1 301 Moved Permanently');  
@@ -28,16 +28,16 @@ if (!$con){
 	die('Could not connect: ' . mysql_error());
 }
 mysql_select_db("$my_database_name", $con);
-																	//查询是否已经存在该url
-																	//输出其映射关系
+										//查询是否已经存在该url
+										//输出其映射关系
 $sql_if_exist = "select * from src_aim where long_url = '".$lurl."'";
 $result = mysql_query($sql_if_exist);
 if($row = mysql_fetch_array($result)){
 	echo "http://bian.com/" . $row['short_url']. ".php";
 }else{
-	$sql_get_maxid = "select max(Id) from src_aim";					//发号器原理：通过数据库的自增id 
-	$max_line = mysql_query($sql_get_maxid);						//取出这个值为其 发号，可避免重复
-	if($row1 = mysql_fetch_row($max_line)){							//但可能会存在浪费or并发方面的问题
+	$sql_get_maxid = "select max(Id) from src_aim";				//发号器原理：通过数据库的自增id 
+	$max_line = mysql_query($sql_get_maxid);				//取出这个值为其 发号，可避免重复
+	if($row1 = mysql_fetch_row($max_line)){					//但可能会存在浪费or并发方面的问题
     	$max_id = $row1[0] + 1;
 	}
 
@@ -46,7 +46,7 @@ if($row = mysql_fetch_array($result)){
 	$sql_add_item = "
 	insert into src_aim (short_url,long_url) 
 	values ('" . $my_short_url . "', '" . $lurl . "')
-	";																//插入新的映射关系
+	";									//插入新的映射关系
 	
 	mysql_query($sql_add_item);
 	$sql_if_success = " select * from src_aim where long_url = '".$lurl."' ";
@@ -54,7 +54,7 @@ if($row = mysql_fetch_array($result)){
 	if (!$rs) {
 		die('Failed Insert : ' . mysql_error());						
 	}																
-	$myfile = fopen ("$my_short_url.php", "w");  					//使用w打开创建文件
+	$myfile = fopen ("$my_short_url.php", "w");  				//使用w打开创建文件
 	if (!$myfile) {
 		echo " Init failed  \n";
 		exit;
